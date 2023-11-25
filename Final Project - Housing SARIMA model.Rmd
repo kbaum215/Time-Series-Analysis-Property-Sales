@@ -157,10 +157,10 @@ CREATING MODEL: Seasonal Autoregressive Integrated Moving Average (SAMIMA) model
 library(forecast)
 ```
 
-Convert data to Time Series: Ensure your data is in a time series format.
+Convert train_data to Time Series: Ensure your data is in a time series format.
 
 ```{r}
-ts_data <- ts(clean_data$price, frequency = 12) # Monthly data with a frequency of 12
+ts_data <- ts(train_data$price, frequency = 12) # Monthly data with a frequency of 12
 ```
 
 Fit SARIMA Model using the auto.arima() function
@@ -185,3 +185,36 @@ Plotting the forecast to visualize the forecasted values and confidence interval
 ```{r}
 plot(forecasted_values)
 ```
+The SARIMA model's performance using the train_data seems reasonable, however the RMSE being high suggests that the model might not be providing accurate predictions. Therefore testing using the test_data would be wise.
+
+Convert test_data to Time Series: Ensure your data is in a time series format.
+
+```{r}
+ts_data <- ts(test_data$price, frequency = 12) # Monthly data with a frequency of 12
+```
+
+Fit SARIMA Model using the auto.arima() function
+
+```{r}
+sarima_model <- auto.arima(ts_data)
+```
+
+Model Summary to see the chosen parameters and diagnostic information
+
+```{r}
+summary(sarima_model)
+```
+
+Forecasting to generate future forecasts using SARIMA model
+
+```{r}
+forecasted_values <- forecast(sarima_model, h = 12) #forecasting 12 steps ahead
+```
+
+Plotting the forecast to visualize the forecasted values and confidence intervals using the plot() funcation
+
+```{r}
+plot(forecasted_values)
+```
+
+Running the data for the test_data, shows the same issue with the RMSE being high at 157320.2. The RMSE being high shows that the accuracy of the predictions is not trustworthy.
