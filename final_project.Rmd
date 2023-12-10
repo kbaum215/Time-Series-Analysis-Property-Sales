@@ -355,8 +355,16 @@ colSums(is.na(data))
 
 
 ```{r}
-ggplot(data, aes(x = propertyType, y = price)) + 
-  geom_boxplot()
+# Data Visualization
+ggplot(data, aes(x = price)) +
+  geom_histogram(binwidth = 50000, fill = "lightblue", color = "black") +
+  labs(title = "Price Distribution", x = "Price") +
+  theme_minimal()
+
+ggplot(data, aes(x = propertyType, y = price)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Price Distribution by Property Type", x = "Property Type", y = "Price") +
+  theme_minimal()
 ```
 
 Below, we filter out the outliers based on interquartile ranges using the standard principle of 1.5 times the lowest and highest quartile. We then display the number of rows with outliers to see how many there are:
@@ -382,7 +390,9 @@ nrow(clean_data)
 Next we show the boxplots of prices after removing outliers
 ```{r}
 ggplot(clean_data, aes(x = propertyType, y = price)) + 
-  geom_boxplot()
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Price Distribution by Property Type After Removing Outliers", x = "Property Type", y = "Price") +
+  theme_minimal()
 ```
 
 
@@ -572,24 +582,6 @@ monthly_amounts <- aggregate(data$price, by = list(data$Month), FUN = sum)
 ```
 
 ```{r}
-# Data Visualization
-ggplot(data, aes(x = price)) +
-  geom_histogram(binwidth = 50000, fill = "lightblue", color = "black") +
-  labs(title = "Price Distribution", x = "Price") +
-  theme_minimal()
-
-ggplot(data, aes(x = propertyType, y = price)) +
-  geom_boxplot(fill = "lightblue") +
-  labs(title = "Price Distribution by Property Type", x = "Property Type", y = "Price") +
-  theme_minimal()
-```
-```{r}
-corr <- cor(data[, c("price", "bedrooms")])
-corr
-
-corrplot(corr, method = "color", type = "upper", tl.col = "black")
-```
-```{r}
 # detecting outliers
 price_q1 <- quantile(data$price, 0.25)
 price_q3 <- quantile(data$price, 0.75)
@@ -606,6 +598,7 @@ ggplot(data, aes(x = "datesold", y = price)) +
   theme_minimal() +
   scale_x_discrete()
 ```
+
 ```{r}
 # Property Type Analysis
 property_type_prices <- aggregate(data$price, by = list(data$propertyType), FUN = mean)
@@ -613,19 +606,6 @@ property_type_bedrooms <- aggregate(data$bedrooms, by = list(data$propertyType),
 
 print(property_type_bedrooms)
 print(property_type_prices)
-```
-```{r}
-# Bar plot for price
-ggplot(property_type_prices, aes(x = Group.1, y = x)) +
-  geom_bar(stat = "identity", fill = "lightblue") +
-  labs(title = "Average Price by Property Type", x = "Property Type", y = "Average Price") +
-  theme_minimal()
-
-# Bar plot for bedrooms
-ggplot(property_type_bedrooms, aes(x = Group.1, y = x)) +
-  geom_bar(stat = "identity", fill = "lightblue") +
-  labs(title = "Average Bedrooms by Property Type", x = "Property Type", y = "Average Bedrooms") +
-  theme_minimal()
 ```
 
 ```{r}
@@ -648,7 +628,7 @@ cat("Correlation between Postalcode and Bedroom: ", corr_post_bed, "\n")
 
 
 SARIMA Model
-```{r setup}
+```{r}
 # Transform the "datesold" column to ensure it is in date format
 data$datesold <- as.Date(data$datesold, format = "%m/%d/%Y %H:%M")
 ```
@@ -722,10 +702,6 @@ ggplot(quarterly_data, aes(x = Quarter, y = TotalPrice)) +
 
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 Load in the data
 ```{r}
 library(readr)
@@ -736,13 +712,6 @@ library(tidyverse)
 Check for missing values:
 ```{r}
 colSums(is.na(data))
-```
-
-
-```{r}
-library(ggplot2)
-ggplot(data, aes(x = propertyType, y = price)) + 
-  geom_boxplot()
 ```
 
 Below, we filter out the outliers based on interquartile ranges using the standard principle of 1.5 times the lowest and highest quartile. We then display the number of rows with outliers to see how many there are:
@@ -765,12 +734,6 @@ clean_data <- subset(data, price >= (Q1 - 1.5 * IQR) & price <= (Q3 + 1.5 * IQR)
 nrow(clean_data)
 ```
 
-Next we show the boxplots of prices after removing outliers
-```{r}
-library(ggplot2)
-ggplot(clean_data, aes(x = propertyType, y = price)) + 
-  geom_boxplot()
-```
 
 Next, we perform data splitting with an 80/20 approach
 ```{r}
